@@ -32,5 +32,6 @@ npm run gen
 ```console
 #!/bin/sh
 PROJECT_HOME="<django_project_home>"
+rm -Rf "$PROJECT_HOME"amp_start_blog_post/templates/amp_start_blog_post/htmls
 \cp -Rf htmls "$PROJECT_HOME"amp_start_blog_post/templates/amp_start_blog_post/htmls
 ````
