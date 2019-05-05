@@ -49,8 +49,7 @@ function createTransformedHtml(url) {
   const p = new Promise((resolve) => {
     https.get(url, function(res) {
         let data = '';
-        res.setEncoding('utf8');
-        
+        res.setEncoding('utf8');        
         res.on('data', function(stream) {
             data += stream;
         });
@@ -76,13 +75,17 @@ function createTransformedHtml(url) {
   return p;
 }
 
-const promise = getAmpUrlsFromSitemap();
-promise.then((resultUrls) => {
+async function syncCreateFiles(resultUrls) {
   for (let url of resultUrls) {
-    createTransformedHtml(url).then((filename) => {
+    await createTransformedHtml(url).then((filename) => {
       /* eslint-disable-next-line no-console */
       console.log(filename + ' WRITE DONE')
     })
   }
+}
+
+const promise = getAmpUrlsFromSitemap();
+promise.then((resultUrls) => {
+  syncCreateFiles(resultUrls);
   /* eslint-disable-next-line no-console */
 }).catch((e) => console.log(e));
