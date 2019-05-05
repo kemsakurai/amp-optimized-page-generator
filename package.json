@@ -1,0 +1,24 @@
+{
+  "name": "amp-optimized-page-generator",
+  "version": "0.0.1",
+  "description": "Generate AMP optimized page from sitemap",
+  "main": "index.js",
+  "dependencies": {
+    "amp-toolbox-optimizer": "^0.5.3",
+    "amp-toolbox-runtime-version": "^0.2.7",
+    "xml2js": "^0.4.19"
+  },
+  "devDependencies": {
+    "eslint": "^5.16.0"
+  },
+  "scripts": {
+    "test": "echo test",
+    "gen": "node index.js",
+    "lint": "eslint"
+  },
+  "keywords": [
+    "AMP"
+  ],
+  "author": "K.Sakurai",
+  "license": "MIT"
+}
