@@ -7,6 +7,7 @@
 -----------------------------------------------------
 ## Usage            
 
+### インストール、実行    
 ```console
 git clone https://github.com/kemsakurai/amp-optimized-page-generator.git
 ```
@@ -26,3 +27,10 @@ mkdir htmls
 ```console
 npm run gen
 ```
+
+### Django プロジェクト配下にテンプレートとして配置する    
+```console
+#!/bin/sh
+PROJECT_HOME="<django_project_home>"
+\cp -Rf htmls "$PROJECT_HOME"amp_start_blog_post/templates/amp_start_blog_post/htmls
+````
