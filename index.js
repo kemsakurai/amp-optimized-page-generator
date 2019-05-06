@@ -4,8 +4,9 @@ const xml2js = require('xml2js');
 const parser = new xml2js.Parser({ attrkey: 'ATTR' });
 const url = 'https://www.monotalk.xyz/sitemap.xml';
 const fs = require('fs');
-// retrieve the latest runtime version
 const runtimeVersion = require('amp-toolbox-runtime-version');
+const cheerio = require('cheerio');
+const config = require('./config');
 
 function getAmpRuntimeVersion() {
   const p = new Promise((resolve) => {  
@@ -60,7 +61,10 @@ function createTransformedHtml(url) {
                   ampUrl: canonicalUrl,
                   ampRuntimeVersion: ampRuntimeVersion
                 }).then((optimizedHtml) => {
-                  fs.writeFile('./htmls/' + fileName, optimizedHtml, 'utf8', (error) => {
+                  const $ = cheerio.load(optimizedHtml);
+                  $('head').prepend( config.gtmHeadTag );
+                  $('body').prepend( config.gtmNoScriptTag );
+                  fs.writeFile('./htmls/' + fileName, $.html(), 'utf8', (error) => {
                     if (error) {
                       console.log(JSON.stringify(error));
                     }

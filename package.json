@@ -6,6 +6,7 @@
   "dependencies": {
     "amp-toolbox-optimizer": "^0.5.3",
     "amp-toolbox-runtime-version": "^0.2.7",
+    "cheerio": "^1.0.0-rc.3",
     "xml2js": "^0.4.19"
   },
   "devDependencies": {
