@@ -5,8 +5,6 @@ const parser = new xml2js.Parser({ attrkey: 'ATTR' });
 const url = 'https://www.monotalk.xyz/sitemap.xml';
 const fs = require('fs');
 const runtimeVersion = require('amp-toolbox-runtime-version');
-const cheerio = require('cheerio');
-const config = require('./config');
 
 function getAmpRuntimeVersion() {
   const p = new Promise((resolve) => {  
@@ -61,10 +59,7 @@ function createTransformedHtml(url) {
                   ampUrl: canonicalUrl,
                   ampRuntimeVersion: ampRuntimeVersion
                 }).then((optimizedHtml) => {
-                  const $ = cheerio.load(optimizedHtml);
-                  $('head').prepend( config.gtmHeadTag );
-                  $('body').prepend( config.gtmNoScriptTag );
-                  fs.writeFile('./htmls/' + fileName, $.html(), 'utf8', (error) => {
+                  fs.writeFile('./htmls/' + fileName, optimizedHtml, 'utf8', (error) => {
                     if (error) {
                       console.log(JSON.stringify(error));
                     }
