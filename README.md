@@ -25,7 +25,11 @@ mkdir htmls
 ```
 
 ```console
-npm run gen
+npm run find-amp-url
+```
+
+```console
+npm run gen-html
 ```
 
 ### Django プロジェクト配下にテンプレートとして配置する    
