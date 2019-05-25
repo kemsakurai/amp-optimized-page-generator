@@ -1,9 +1,7 @@
 const ampOptimizer = require('amp-toolbox-optimizer');
 const https = require('https');
-const xml2js = require('xml2js');
-const parser = new xml2js.Parser({ attrkey: 'ATTR' });
-const url = 'https://www.monotalk.xyz/sitemap.xml';
 const fs = require('fs');
+const readline = require("readline");
 const runtimeVersion = require('amp-toolbox-runtime-version');
 
 function getAmpRuntimeVersion() {
@@ -14,39 +12,14 @@ function getAmpRuntimeVersion() {
   return p;
 }
 
-function getAmpUrlsFromSitemap() {
-  const p = new Promise((resolve, reject) => {  
-    https.get(url, function(res) {
-        let data = '';
-        res.on('data', function(stream) {
-            data += stream;
-        });
-        res.on('end', function(){
-            parser.parseString(data, function(error, result) {
-                if(error === null) {
-                    let resultUrls = []
-                    for (const elem of result.urlset.url) {
-                      resultUrls.push(elem.loc[0].replace('https://www.monotalk.xyz/', 'https://www.monotalk.xyz/amp/'));
-                    }
-                    resolve(resultUrls);
-                }
-                else {
-                    reject(error);
-                }
-            });
-        });
-    });  
-  });
-  return p;
-}
-
-function createTransformedHtml(url) {
-  const elems = url.split('/');
+function createTransformedHtml(jsonRow) {
+  
+  const elems = jsonRow.ampUrl.split('/');
   let fileName = elems[elems.length -2];
   fileName = fileName.slice(0, 100) + '.html';
-  const canonicalUrl = url.replace('https://www.monotalk.xyz/amp/', 'https://www.monotalk.xyz/');
+  const canonicalUrl = jsonRow.url;
   const p = new Promise((resolve) => {
-    https.get(url, function(res) {
+    https.get(jsonRow.ampUrl, function(res) {
         let data = '';
         res.setEncoding('utf8');        
         res.on('data', function(stream) {
@@ -75,16 +48,22 @@ function createTransformedHtml(url) {
 }
 
 async function syncCreateFiles(resultUrls) {
-  for (let url of resultUrls) {
-    await createTransformedHtml(url).then((filename) => {
+  for (let jsonRow of resultUrls) {
+    await createTransformedHtml(jsonRow).then((filename) => {
       /* eslint-disable-next-line no-console */
       console.log(filename + ' WRITE DONE')
     })
   }
 }
 
-const promise = getAmpUrlsFromSitemap();
-promise.then((resultUrls) => {
-  syncCreateFiles(resultUrls);
-  /* eslint-disable-next-line no-console */
-}).catch((e) => console.log(e));
+function getAmpUrlFromFile() {
+  let results = new Array();
+  let lines = fs.readFileSync("./urlAmpUrlRelations.json").toString().split('\n');
+  for (line of lines) {
+    results.push(JSON.parse(line));
+  }
+  return results;
+}
+
+let results = getAmpUrlFromFile();
+syncCreateFiles(results);

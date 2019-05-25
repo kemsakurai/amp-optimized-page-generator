@@ -14,7 +14,8 @@
   },
   "scripts": {
     "test": "echo test",
-    "gen": "node index.js",
+    "gen-html": "node htmlGenerator.js",
+    "find-amp-url": "node ampUrlFinder.js",
     "lint": "eslint"
   },
   "keywords": [
