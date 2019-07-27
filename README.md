@@ -7,6 +7,11 @@
 -----------------------------------------------------
 ## Usage            
 
+### ツールの説明       
+
+* **ampUrlFinder.js**        
+
+
 ### インストール、実行    
 ```console
 git clone https://github.com/kemsakurai/amp-optimized-page-generator.git

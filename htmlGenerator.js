@@ -1,7 +1,6 @@
 const ampOptimizer = require('amp-toolbox-optimizer');
 const https = require('https');
 const fs = require('fs');
-const readline = require("readline");
 const runtimeVersion = require('amp-toolbox-runtime-version');
 
 function getAmpRuntimeVersion() {
