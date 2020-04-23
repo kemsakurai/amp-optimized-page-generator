@@ -4,13 +4,13 @@
   "description": "Generate AMP optimized page from sitemap",
   "main": "index.js",
   "dependencies": {
-    "amp-toolbox-optimizer": "^0.5.3",
-    "amp-toolbox-runtime-version": "^0.2.7",
+    "@ampproject/toolbox-optimizer": "^2.3.0",
+    "@ampproject/toolbox-runtime-version": "^2.3.0",
     "cheerio": "^1.0.0-rc.3",
-    "xml2js": "^0.4.19"
+    "xml2js": "^0.4.23"
   },
   "devDependencies": {
-    "eslint": "^6.1.0"
+    "eslint": "^6.8.0"
   },
   "scripts": {
     "test": "echo test",

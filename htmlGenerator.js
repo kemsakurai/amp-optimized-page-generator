@@ -1,7 +1,8 @@
-const ampOptimizer = require('amp-toolbox-optimizer');
+const AmpOptimizer = require('@ampproject/toolbox-optimizer');
+const ampOptimizer = AmpOptimizer.create();
 const https = require('https');
 const fs = require('fs');
-const runtimeVersion = require('amp-toolbox-runtime-version');
+const runtimeVersion = require('@ampproject/toolbox-runtime-version');
 
 function getAmpRuntimeVersion() {
   const p = new Promise((resolve) => {  
