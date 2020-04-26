@@ -7,6 +7,7 @@
     "@ampproject/toolbox-optimizer": "^2.3.0",
     "@ampproject/toolbox-runtime-version": "^2.3.0",
     "cheerio": "^1.0.0-rc.3",
+    "sqlite3": "^4.1.1",
     "xml2js": "^0.4.23"
   },
   "devDependencies": {
@@ -16,6 +17,7 @@
     "test": "echo test",
     "gen-html": "node htmlGenerator.js",
     "find-amp-url": "node ampUrlFinder.js",
+    "init": "node initialize.js",
     "lint": "eslint"
   },
   "keywords": [

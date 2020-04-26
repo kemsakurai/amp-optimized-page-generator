@@ -1,3 +1,4 @@
 node_modules
 htmls/*.html
 urlAmpUrlRelations.json
+db.sqlite3
