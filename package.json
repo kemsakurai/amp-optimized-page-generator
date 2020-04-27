@@ -7,6 +7,7 @@
     "@ampproject/toolbox-optimizer": "^2.3.0",
     "@ampproject/toolbox-runtime-version": "^2.3.0",
     "cheerio": "^1.0.0-rc.3",
+    "commander": "^5.1.0",
     "sqlite3": "^4.1.1",
     "xml2js": "^0.4.23"
   },

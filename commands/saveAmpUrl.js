@@ -5,6 +5,10 @@ const parser = new xml2js.Parser({ attrkey: 'ATTR' });
 const config = require('./config.js');
 const {Task, TaskManageRepository} = require('./dbUtils.js');
 
+module.exports = function() {
+    
+}
+
 function getUrlsFromSitemap() {
   const p = new Promise((resolve, reject) => {  
     https.get(config.siteMapUrl, function(res) {

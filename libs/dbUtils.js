@@ -10,6 +10,8 @@ class DBCommon {
 }
 exports.DBComon = DBCommon;
 
+const BEFORE_SAVE_AMP_URL = "BEFORE_SAVE_AMP_URL";
+
 class Task {
   constructor(url, ampUrl, lastmod, status) {
       this.url = url;
@@ -17,7 +19,11 @@ class Task {
       this.lastmod = lastmod;
       this.status = status;
     }
-  static constructByJsonElem(elem){
+    static constructBeforeSaveUrl(url, lastmod){
+      return new Task(url, "", lastmod, BEFORE_SAVE_AMP_URL);
+    }
+
+    static constructByJsonElem(elem){
       return new Task(elem.url, elem.ampUrl, elem.lastmod, elem.status);
   }
 }
@@ -26,6 +32,21 @@ exports.Task = Task;
 const taskManageTableName = "tasks";
 
 class TaskManageRepository {
+
+  static async dropTableIfNotExists() {
+    const db = DBCommon.get()
+    return new Promise((resolve, reject) => {
+      try {
+        db.serialize(() => {
+          db.run(`drop table if exists ${taskManageTableName}`)
+        });
+        return resolve()
+      } catch (err) {
+        return reject(err)
+      }
+    })
+  }
+
   static async createTableIfNotExists() {
     const db = DBCommon.get()
     return new Promise((resolve, reject) => {
@@ -60,12 +81,18 @@ class TaskManageRepository {
     })
   }
   static async selectByUrl(url) {
+
     const db = DBCommon.get()
     return new Promise((resolve, reject) => {
       db.serialize(() => {
-        db.get(`select url, ampUrl, lastmod, status from ${taskManageTableName} where url = ${url}`,
+        db.get(`select url, ampUrl, lastmod, status from ${taskManageTableName} where url = $url`, url ,
           (err, row) => {
-            if (err) return reject(err);
+            if (err) {
+              return reject(err);
+            }
+            if(!row) {
+              return resolve();
+            }
             return resolve(new Task(row["url"], row["ampUrl"], row["lastmod"], row["status"]));
           })
       })
