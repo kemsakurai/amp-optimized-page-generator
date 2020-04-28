@@ -97,6 +97,31 @@ class TaskManageRepository {
           })
       })
     })
-  }  
+  } 
+  static async selectByStatusBeForeSaveAMPUrl() {
+    return selectByStatus(BEFORE_SAVE_AMP_URL);
+  }
+
+  static async selectByStatus(status) {
+    const db = DBCommon.get()
+    const result = [];
+    return new Promise((resolve, reject) => {
+      db.serialize(() => {
+        db.all(`select url, ampUrl, lastmod, status from ${taskManageTableName} where status = $status`, status ,
+          (err, row) => {
+            if (err) {
+              return reject(err);
+            }
+            if(!row) {
+              return resolve();
+            }
+            rows.forEach(row => {
+              result.push(new Task(row["url"], row["ampUrl"], row["lastmod"], row["status"]));
+            })
+            return resolve(result);
+          })
+      })
+    })
+  } 
 }
 exports.TaskManageRepository = TaskManageRepository;

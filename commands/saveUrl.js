@@ -54,7 +54,6 @@ async function filterTargetSave(siteMapResults) {
     for (let siteMapResult of siteMapResults) {
         let task = await TaskManageRepository.selectByUrl(siteMapResult.url);
         if(task && task.url === siteMapResult.url && (!task.lastmod || task.lastmod === siteMapResult.lastmod)) {
-            console.log(task, siteMapResult);
             continue;
         }
         results.push(Task.constructBeforeSaveUrl(siteMapResult.url, siteMapResult.lastmod));

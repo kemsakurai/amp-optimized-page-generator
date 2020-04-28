@@ -6,44 +6,19 @@ const config = require('./config.js');
 const {Task, TaskManageRepository} = require('./dbUtils.js');
 
 module.exports = function() {
-    
-}
-
-function getUrlsFromSitemap() {
-  const p = new Promise((resolve, reject) => {  
-    https.get(config.siteMapUrl, function(res) {
-        let data = '';
-        res.on('data', function(stream) {
-            data += stream;
-        });
-        res.on('end', function(){
-            parser.parseString(data, function(error, result) {
-                if(error === null) {
-                    let results = []
-                    for (const elem of result.urlset.url) {
-                        let sitemapElement = {};
-                        sitemapElement.url = elem.loc[0];
-                        if(elem.lastmod) {
-                            sitemapElement.lastmod = elem.lastmod[0]
-                        } else {
-                            sitemapElement.lastmod = elem.lastmod;
-                        }
-                        results.push(sitemapElement);
-                    }
-                    resolve(results);
-                }
-                else {
-                    reject(error);
-                }
-            });
-        });
+    // Data取得
+    const promise = TaskManageRepository.selectByStatusBeForeSaveAMPUrl();
+    // Data更新
+    promise.then((result) => {
+        syncGetUrlAmpUrlRelations(result).then((results) => {
+            for (let result of results) {
+                TaskManageRepository.save(Task.constructByJsonElem(result));
+            }
+        })
     });
-  });
-  return p;
 }
 
 function getUrlAmpUrlRelation(siteMapResult) {
-    console.log(siteMapResult);
     const p = new Promise((resolve) => {
         https.get(siteMapResult.url, function(res) {
           let data = '';
@@ -70,18 +45,6 @@ function getUrlAmpUrlRelation(siteMapResult) {
     return p;
 }
 
-function filterTargetSave(siteMapResults) {
-    let results = [];
-    for (let siteMapResult of siteMapResults) {
-        let task = TaskManageRepository.selectByUrl(siteMapResult.url);
-        if(task && task.url === siteMapResult.url && task.lastmod === siteMapResult.lastmod) {
-            continue;
-        }
-        results.push(new Task(siteMapResult.url, "", siteMapResult.lastmod, ));
-    }
-    return results;
-}
-
 async function syncGetUrlAmpUrlRelations(inputs) {
     let urlAmpUrlRelations = new Array();
     for (let inputData of inputs) {
@@ -98,17 +61,3 @@ async function syncGetUrlAmpUrlRelations(inputs) {
     }
     return urlAmpUrlRelations;
 }
-
-// --------------------------
-// Main
-// -------------------------- 
-const promise = getUrlsFromSitemap();
-promise.then((siteMapResults) => {
-    let inputs = filterTargetSave(siteMapResults);
-    syncGetUrlAmpUrlRelations(inputs).then((results) => {
-        for (let result of results) {
-            TaskManageRepository.save(Task.constructByJsonElem(result));
-        }
-    })
-    /* eslint-disable-next-line no-console */
-}).catch((e) => console.log(e));
