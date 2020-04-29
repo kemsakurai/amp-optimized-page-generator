@@ -8,12 +8,17 @@ const {Task, TaskManageRepository} = require('../libs/dbUtils.js');
 module.exports = function() {
     const promise = getUrlsFromSitemap();
     promise.then((siteMapResults) => {
-        let targets = filterTargetSave(siteMapResults);
-        for (let target of targets) {
-            TaskManageRepository.save(Task.constructByJsonElem(target));
-        }
+        
+        const promiseFilterTargetSave = filterTargetSave(siteMapResults);
+            promiseFilterTargetSave.then((targets) => {
+                for (let target of targets) {
+                    TaskManageRepository.save(Task.constructByJsonElem(target));
+                }
+            /* eslint-disable-next-line no-console */
+            }).catch((e) => console.log(e));
+
     /* eslint-disable-next-line no-console */
-    }).catch((e) => console.log(e));    
+    }).catch((e) => console.log(e));
 }
 
 function getUrlsFromSitemap() {

@@ -1,9 +1,7 @@
 const https = require('https');
 const cheerio = require('cheerio');
-const xml2js = require('xml2js');
-const parser = new xml2js.Parser({ attrkey: 'ATTR' });
-const config = require('./config.js');
-const {Task, TaskManageRepository} = require('./dbUtils.js');
+const config = require('../config.js');
+const {Task, TaskManageRepository} = require('../libs/dbUtils.js');
 
 module.exports = function() {
     // Data取得
@@ -28,17 +26,17 @@ function getUrlAmpUrlRelation(siteMapResult) {
           res.on('end', function(){
             const $ = cheerio.load(data);
             let link = $("link[rel='amphtml']");
-            if(link) {
-                let result = new Object();
+            let result = new Object();
+            result.url = siteMapResult.url;
+            result.lastmod = siteMapResult.lastmod;
+            if(link) {                
                 result.ampUrl = config.domainUrl + link.attr('href');
-                result.url = siteMapResult.url;
-                result.lastmod = siteMapResult.lastmod;
-                result.status = siteMapResult.status;
-                resolve(JSON.stringify(result));
+                result.status = "DONE";
             } else {
-                let result = null;
-                resolve(result);
+                result.ampUrl = null;
+                result.status = "FAILED";
             }
+            resolve(result);
         });
       });
     });
@@ -48,16 +46,10 @@ function getUrlAmpUrlRelation(siteMapResult) {
 async function syncGetUrlAmpUrlRelations(inputs) {
     let urlAmpUrlRelations = new Array();
     for (let inputData of inputs) {
-        if (inputData.status === "DONE") {
-            urlAmpUrlRelations.push(inputData);
-        } else {
-            await getUrlAmpUrlRelation(inputData).then((result) => {
-                if(result) {
-                    urlAmpUrlRelations.push(result);
-                }
-            /* eslint-disable-next-line no-console */
-            }).catch((e) => console.log(e));
-        }
+        await getUrlAmpUrlRelation(inputData).then((result) => {
+            urlAmpUrlRelations.push(result);
+        /* eslint-disable-next-line no-console */
+        }).catch((e) => console.log(e));
     }
     return urlAmpUrlRelations;
 }

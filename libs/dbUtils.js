@@ -24,6 +24,7 @@ class Task {
     }
 
     static constructByJsonElem(elem){
+      console.log(elem);
       return new Task(elem.url, elem.ampUrl, elem.lastmod, elem.status);
   }
 }
@@ -70,7 +71,7 @@ class TaskManageRepository {
     return new Promise((resolve, reject) => {
       try {
         db.run(`insert or replace into ${taskManageTableName} 
-        (url, ampUrl, lastmod, status) 
+        (url, ampurl, lastmod, status) 
         values ($url, $ampUrl, $lastmod, $status)`,
         task.url, task.ampUrl, task.lastmod, task.status
         )
@@ -85,7 +86,7 @@ class TaskManageRepository {
     const db = DBCommon.get()
     return new Promise((resolve, reject) => {
       db.serialize(() => {
-        db.get(`select url, ampUrl, lastmod, status from ${taskManageTableName} where url = $url`, url ,
+        db.get(`select url, ampurl, lastmod, status from ${taskManageTableName} where url = $url`, url ,
           (err, row) => {
             if (err) {
               return reject(err);
@@ -99,7 +100,7 @@ class TaskManageRepository {
     })
   } 
   static async selectByStatusBeForeSaveAMPUrl() {
-    return selectByStatus(BEFORE_SAVE_AMP_URL);
+    return this.selectByStatus(BEFORE_SAVE_AMP_URL);
   }
 
   static async selectByStatus(status) {
@@ -107,16 +108,37 @@ class TaskManageRepository {
     const result = [];
     return new Promise((resolve, reject) => {
       db.serialize(() => {
-        db.all(`select url, ampUrl, lastmod, status from ${taskManageTableName} where status = $status`, status ,
-          (err, row) => {
+        db.all(`select url, ampurl, lastmod, status from ${taskManageTableName} where status = $status`, status ,
+          (err, rows) => {
             if (err) {
               return reject(err);
             }
-            if(!row) {
+            if(!rows) {
               return resolve();
             }
             rows.forEach(row => {
-              result.push(new Task(row["url"], row["ampUrl"], row["lastmod"], row["status"]));
+              result.push(new Task(row["url"], row["ampurl"], row["lastmod"], row["status"]));
+            })
+            return resolve(result);
+          })
+      })
+    })
+  }
+  static async selectAll() {
+    const db = DBCommon.get()
+    const result = [];
+    return new Promise((resolve, reject) => {
+      db.serialize(() => {
+        db.all(`select url, ampurl, lastmod, status from ${taskManageTableName}`, (err, rows) => {
+            if (err) {
+              return reject(err);
+            }
+            if(!rows) {
+              return resolve();
+            }
+            rows.forEach(row => {
+              console.log(row);
+              result.push(new Task(row["url"], row["ampurl"], row["lastmod"], row["status"]));
             })
             return resolve(result);
           })
