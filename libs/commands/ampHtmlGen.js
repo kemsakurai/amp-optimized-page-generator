@@ -3,6 +3,26 @@ const ampOptimizer = AmpOptimizer.create();
 const https = require('https');
 const fs = require('fs');
 const runtimeVersion = require('@ampproject/toolbox-runtime-version');
+const {TaskManageRepository, Status} = require('../database/tasks.js');
+
+module.exports = function() {
+  // Data取得
+  const promise = TaskManageRepository.selectByStatusBeForeGenAMPHtml();
+  // Data更新
+  promise.then((result) => {
+      for (let elem of result) {
+        createTransformedHtml(elem).then((filename) => {
+          console.log(`Generate AMP HTML DONE.. ${filename}`);
+          elem.status = Status.DONE;
+          TaskManageRepository.save(elem);
+        }).catch((filename) => {
+          console.log(`Generate AMP HTML FAILED.. ${filename}`);
+          elem.status = Status.FAILED_AMP_HTML_GEN;
+          TaskManageRepository.save(elem);
+        })
+      }
+  });
+}
 
 function getAmpRuntimeVersion() {
   const p = new Promise((resolve) => {  
@@ -13,7 +33,6 @@ function getAmpRuntimeVersion() {
 }
 
 function createTransformedHtml(jsonRow) {
-  
   const elems = jsonRow.ampUrl.split('/');
   let fileName = elems[elems.length -2];
   fileName = fileName.slice(0, 100) + '.html';
@@ -34,36 +53,16 @@ function createTransformedHtml(jsonRow) {
                 }).then((optimizedHtml) => {
                   fs.writeFile('./htmls/' + fileName, optimizedHtml, 'utf8', (error) => {
                     if (error) {
-                      console.log(JSON.stringify(error));
+                      reject(fileName);
                     }
                   });
                   resolve(fileName);
-                  /* eslint-disable-next-line no-console */
-                }).catch((e) => console.log(e));
+                }).catch((e) => reject(fileName));
             })
         });
+    }).on('error', function (error) {
+      reject(fileName);
     });
   });
   return p;
 }
-
-async function syncCreateFiles(resultUrls) {
-  for (let jsonRow of resultUrls) {
-    await createTransformedHtml(jsonRow).then((filename) => {
-      /* eslint-disable-next-line no-console */
-      console.log(filename + ' WRITE DONE')
-    })
-  }
-}
-
-function getAmpUrlFromFile() {
-  let results = new Array();
-  let lines = fs.readFileSync("./urlAmpUrlRelations.json").toString().split('\n');
-  for (line of lines) {
-    results.push(JSON.parse(line));
-  }
-  return results;
-}
-
-let results = getAmpUrlFromFile();
-syncCreateFiles(results);

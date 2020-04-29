@@ -1,7 +1,7 @@
 const https = require('https');
 const cheerio = require('cheerio');
-const config = require('../config.js');
-const {Task, TaskManageRepository} = require('../libs/dbUtils.js');
+const config = require('../../config.js');
+const {Task, TaskManageRepository, Status} = require('../database/tasks.js');
 
 module.exports = function() {
     // Data取得
@@ -31,10 +31,10 @@ function getUrlAmpUrlRelation(siteMapResult) {
             result.lastmod = siteMapResult.lastmod;
             if(link) {                
                 result.ampUrl = config.domainUrl + link.attr('href');
-                result.status = "DONE";
+                result.status = Status.BEFORE_GEN_AMP_HTML;
             } else {
                 result.ampUrl = null;
-                result.status = "FAILED";
+                result.status = Status.FAILED_GET_AMP_URL;
             }
             resolve(result);
         });

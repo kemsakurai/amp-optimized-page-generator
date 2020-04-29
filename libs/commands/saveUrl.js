@@ -2,13 +2,12 @@ const https = require('https');
 const cheerio = require('cheerio');
 const xml2js = require('xml2js');
 const parser = new xml2js.Parser({ attrkey: 'ATTR' });
-const config = require('../config.js');
-const {Task, TaskManageRepository} = require('../libs/dbUtils.js');
+const config = require('../../config.js');
+const {Task, TaskManageRepository} = require('../database/tasks.js');
 
 module.exports = function() {
     const promise = getUrlsFromSitemap();
-    promise.then((siteMapResults) => {
-        
+    promise.then((siteMapResults) => {        
         const promiseFilterTargetSave = filterTargetSave(siteMapResults);
             promiseFilterTargetSave.then((targets) => {
                 for (let target of targets) {

@@ -1,4 +1,4 @@
-const {TaskManageRepository} = require('../libs/dbUtils.js');
+const {TaskManageRepository} = require('../database/tasks.js');
 
 module.exports = function () {
     TaskManageRepository.dropTableIfNotExists();

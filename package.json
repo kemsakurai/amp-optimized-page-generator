@@ -2,23 +2,28 @@
   "name": "amp-optimized-page-generator",
   "version": "0.0.1",
   "description": "Generate AMP optimized page from sitemap",
-  "main": "index.js",
+  "main": "cli.js",
+  "repository" :{ 
+    "type" : "git",
+    "url" : "https://github.com/kemsakurai/amp-optimized-page-generator.git"
+  },
   "dependencies": {
     "@ampproject/toolbox-optimizer": "^2.3.0",
     "@ampproject/toolbox-runtime-version": "^2.3.0",
     "cheerio": "^1.0.0-rc.3",
     "commander": "^5.1.0",
-    "sqlite3": "^4.1.1",
+    "sqlite3": "^4.2.0",
     "xml2js": "^0.4.23"
   },
   "devDependencies": {
     "eslint": "^6.8.0"
   },
   "scripts": {
-    "test": "echo test",
-    "gen-html": "node htmlGenerator.js",
-    "find-amp-url": "node ampUrlFinder.js",
-    "init": "node initialize.js",
+    "start": "node cli.js",
+    "gen-html": "node cli.js genAMPHtml",
+    "find-amp-url": "node cli.js saveUrl && node cli.js saveAmpUrl",
+    "dumpData": "node cli.js dumpData",
+    "init": "node cli.js init",
     "lint": "eslint"
   },
   "keywords": [

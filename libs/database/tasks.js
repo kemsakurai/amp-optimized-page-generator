@@ -1,30 +1,28 @@
-const sqlite3 = require('sqlite3');
-let database;
-class DBCommon {
-  static get() {
-    if(!database) {
-      database = new sqlite3.Database("db.sqlite3");
-    }
-    return database;
-  }
-}
-exports.DBComon = DBCommon;
+const { getDatabase } = require("./dbUtils.js");
 
-const BEFORE_SAVE_AMP_URL = "BEFORE_SAVE_AMP_URL";
+const Status = {
+    BEFORE_SAVE_AMP_URL : "BEFORE_SAVE_AMP_URL",
+    BEFORE_GEN_AMP_HTML : "BEFORE_GEN_AMP_HTML",
+    FAILED_GET_AMP_URL : "FAILED_GET_AMP_URL",
+    FAILED_GEN_AMP_HTML : "FAILED_GEN_AMP_HTML",
+    DONE : "DONE"
+}
+exports.Status = Status;
 
 class Task {
-  constructor(url, ampUrl, lastmod, status) {
+    constructor(url, ampUrl, lastmod, status) {
       this.url = url;
       this.ampUrl = ampUrl;
       this.lastmod = lastmod;
       this.status = status;
     }
     static constructBeforeSaveUrl(url, lastmod){
-      return new Task(url, "", lastmod, BEFORE_SAVE_AMP_URL);
+      return new Task(url, "", lastmod, Status.BEFORE_SAVE_AMP_URL);
     }
-
+    static constructByRow(row) {
+      return new Task(row["url"], row["ampurl"], row["lastmod"], row["status"]);
+    }
     static constructByJsonElem(elem){
-      console.log(elem);
       return new Task(elem.url, elem.ampUrl, elem.lastmod, elem.status);
   }
 }
@@ -35,7 +33,7 @@ const taskManageTableName = "tasks";
 class TaskManageRepository {
 
   static async dropTableIfNotExists() {
-    const db = DBCommon.get()
+    const db = getDatabase()
     return new Promise((resolve, reject) => {
       try {
         db.serialize(() => {
@@ -49,7 +47,7 @@ class TaskManageRepository {
   }
 
   static async createTableIfNotExists() {
-    const db = DBCommon.get()
+    const db = getDatabase()
     return new Promise((resolve, reject) => {
       try {
         db.serialize(() => {
@@ -67,7 +65,7 @@ class TaskManageRepository {
     })
   }
   static async save(task) {
-    const db = DBCommon.get()
+    const db = getDatabase()
     return new Promise((resolve, reject) => {
       try {
         db.run(`insert or replace into ${taskManageTableName} 
@@ -83,7 +81,7 @@ class TaskManageRepository {
   }
   static async selectByUrl(url) {
 
-    const db = DBCommon.get()
+    const db = getDatabase()
     return new Promise((resolve, reject) => {
       db.serialize(() => {
         db.get(`select url, ampurl, lastmod, status from ${taskManageTableName} where url = $url`, url ,
@@ -94,17 +92,21 @@ class TaskManageRepository {
             if(!row) {
               return resolve();
             }
-            return resolve(new Task(row["url"], row["ampUrl"], row["lastmod"], row["status"]));
+            return resolve(Task.constructByRow(row));
           })
       })
     })
   } 
+  static async selectByStatusBeForeGenAMPHtml() {
+    return this.selectByStatus(Status.BEFORE_GEN_AMP_HTML);
+  }
+
   static async selectByStatusBeForeSaveAMPUrl() {
-    return this.selectByStatus(BEFORE_SAVE_AMP_URL);
+    return this.selectByStatus(Status.BEFORE_SAVE_AMP_URL);
   }
 
   static async selectByStatus(status) {
-    const db = DBCommon.get()
+    const db = getDatabase()
     const result = [];
     return new Promise((resolve, reject) => {
       db.serialize(() => {
@@ -117,7 +119,7 @@ class TaskManageRepository {
               return resolve();
             }
             rows.forEach(row => {
-              result.push(new Task(row["url"], row["ampurl"], row["lastmod"], row["status"]));
+              result.push(Task.constructByRow(row));
             })
             return resolve(result);
           })
@@ -125,7 +127,7 @@ class TaskManageRepository {
     })
   }
   static async selectAll() {
-    const db = DBCommon.get()
+    const db = getDatabase()
     const result = [];
     return new Promise((resolve, reject) => {
       db.serialize(() => {
@@ -137,8 +139,7 @@ class TaskManageRepository {
               return resolve();
             }
             rows.forEach(row => {
-              console.log(row);
-              result.push(new Task(row["url"], row["ampurl"], row["lastmod"], row["status"]));
+              result.push(Task.constructByRow(row));
             })
             return resolve(result);
           })
