@@ -12,12 +12,20 @@
 ------------
 ### ツールの説明       
 
-* **ampUrlFinder.js**        
-sitemap.xml に定義されたページにアクセスし、`"link[rel='amphtml']` で定義されているAMP のURLを収集します。    
-収集結果は、`urlAmpUrlRelations.json` として出力します。    
+* **./libs/commands/initialize.js**        
+sqliteファイルを初期化します。          
+2回目の実行以降は、作成したテーブルの再生成を行います。     
 
-* **htmlGenerator.js**      
-`urlAmpUrlRelations.json`をINPUTにして、`htmls`フォルダに、最適化した AMP HTMLを出力します。   
+* **./libs/commands/saveUrl.js**        
+sitemap.xml に記載されているURLを、sqliteに登録します。         
+
+* **./libs/commands/saveAmpUrl.js**        
+sqliteに登録したsitemap.xml のURLにアクセスし、    
+`"link[rel='amphtml']` で定義されているAMP のURLを収集します。    
+収集結果は、sqliteに登録します。     
+
+* **./libs/commands/ampHtmlGen.js**      
+`saveAmpUrl.js`の実行結果をINPUTにして、`htmls`フォルダに、最適化した AMP HTMLを出力します。   
 
 ### インストール
 ```console
@@ -37,6 +45,10 @@ mkdir htmls
 ```
 
 ### 実行    
+
+```console
+npm run init
+```
 
 ```console
 npm run find-amp-url
