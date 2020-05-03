@@ -3,7 +3,7 @@ const initialize = require('./libs/commands/initialize.js');
 const saveUrl = require('./libs/commands/saveUrl.js');
 const saveAmpUrl = require('./libs/commands/saveAmpUrl.js');
 const dumpData = require('./libs/commands/dumpData.js');
-const ampHtmlGen = require('./libs/commands/ampHtmlGen.js');
+const genAmpHtml = require('./libs/commands/genAmpHtml.js');
 const sendReport = require('./libs/commands/sendReport.js');
 
 
@@ -23,9 +23,9 @@ program.command('dumpData')
     .description('Dump data database to json.')
     .action(dumpData);
 
-program.command('genAMPHtml')
+program.command('genAmpHtml')
     .description('Generate AMP Html.')
-    .action(ampHtmlGen);
+    .action(genAmpHtml);
 
 program.command('sendReport')
     .description('Send report by mail')
