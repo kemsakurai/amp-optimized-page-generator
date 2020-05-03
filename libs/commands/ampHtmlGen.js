@@ -10,17 +10,7 @@ module.exports = function() {
   const promise = TaskManageRepository.selectByStatusBeForeGenAMPHtml();
   // Data更新
   promise.then((result) => {
-      for (let elem of result) {
-        createTransformedHtml(elem).then((filename) => {
-          console.log(`Generate AMP HTML DONE.. ${filename}`);
-          elem.status = Status.DONE;
-          TaskManageRepository.save(elem);
-        }).catch((filename) => {
-          console.log(`Generate AMP HTML FAILED.. ${filename}`);
-          elem.status = Status.FAILED_AMP_HTML_GEN;
-          TaskManageRepository.save(elem);
-        })
-      }
+    createOneOptimizedHtml(result);
   });
 }
 
@@ -30,6 +20,20 @@ function getAmpRuntimeVersion() {
     resolve(ampRuntimeVersion)
   });
   return p;
+}
+
+async function createOneOptimizedHtml(result) {
+  for (let elem of result) {
+    await createTransformedHtml(elem).then((filename) => {
+      console.log(`Generate AMP HTML DONE.. ${filename}`);
+      elem.status = Status.DONE;
+      TaskManageRepository.save(elem);
+    }).catch((filename) => {
+      console.log(`Generate AMP HTML FAILED.. ${filename}`);
+      elem.status = Status.FAILED_AMP_HTML_GEN;
+      TaskManageRepository.save(elem);
+    })    
+  }
 }
 
 function createTransformedHtml(jsonRow) {

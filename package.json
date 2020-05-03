@@ -3,15 +3,17 @@
   "version": "0.0.1",
   "description": "Generate AMP optimized page from sitemap",
   "main": "cli.js",
-  "repository" :{ 
-    "type" : "git",
-    "url" : "https://github.com/kemsakurai/amp-optimized-page-generator.git"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kemsakurai/amp-optimized-page-generator.git"
   },
   "dependencies": {
     "@ampproject/toolbox-optimizer": "^2.3.0",
     "@ampproject/toolbox-runtime-version": "^2.3.0",
     "cheerio": "^1.0.0-rc.3",
     "commander": "^5.1.0",
+    "mustache": "^4.0.1",
+    "nodemailer": "^6.4.6",
     "sqlite3": "^4.2.0",
     "xml2js": "^0.4.23"
   },

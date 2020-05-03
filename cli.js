@@ -4,6 +4,7 @@ const saveUrl = require('./libs/commands/saveUrl.js');
 const saveAmpUrl = require('./libs/commands/saveAmpUrl.js');
 const dumpData = require('./libs/commands/dumpData.js');
 const ampHtmlGen = require('./libs/commands/ampHtmlGen.js');
+const sendReport = require('./libs/commands/sendReport.js');
 
 
 program.command('init')
@@ -25,5 +26,9 @@ program.command('dumpData')
 program.command('genAMPHtml')
     .description('Generate AMP Html.')
     .action(ampHtmlGen);
+
+program.command('sendReport')
+    .description('Send report by mail')
+    .action(sendReport);
 
 program.parse(process.argv);

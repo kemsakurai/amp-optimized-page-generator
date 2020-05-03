@@ -80,7 +80,6 @@ class TaskManageRepository {
     })
   }
   static async selectByUrl(url) {
-
     const db = getDatabase()
     return new Promise((resolve, reject) => {
       db.serialize(() => {
@@ -110,7 +109,7 @@ class TaskManageRepository {
     const result = [];
     return new Promise((resolve, reject) => {
       db.serialize(() => {
-        db.all(`select url, ampurl, lastmod, status from ${taskManageTableName} where status = $status`, status ,
+        db.all(`select url, ampurl, lastmod, status from ${taskManageTableName} where status = $status order by status, url`, status ,
           (err, rows) => {
             if (err) {
               return reject(err);
@@ -126,12 +125,33 @@ class TaskManageRepository {
       })
     })
   }
+  static async selectByFailedStatus() {
+    const db = getDatabase()
+    const result = [];
+    return new Promise((resolve, reject) => {
+      db.serialize(() => {
+        db.all(`select url, ampurl, lastmod, status from ${taskManageTableName} where status like 'FAILED%' order by status, url`, (err, rows) => {
+            if (err) {
+              return reject(err);
+            }
+            if(!rows) {
+              return resolve();
+            }
+            rows.forEach(row => {
+              result.push(Task.constructByRow(row));
+            })
+            return resolve(result);
+          })
+      })
+    })
+  }
+
   static async selectAll() {
     const db = getDatabase()
     const result = [];
     return new Promise((resolve, reject) => {
       db.serialize(() => {
-        db.all(`select url, ampurl, lastmod, status from ${taskManageTableName}`, (err, rows) => {
+        db.all(`select url, ampurl, lastmod, status from ${taskManageTableName} order by status, url`, (err, rows) => {
             if (err) {
               return reject(err);
             }
