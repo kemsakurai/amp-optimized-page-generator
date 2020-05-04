@@ -22,14 +22,15 @@
   },
   "scripts": {
     "start": "node cli.js",
-    "gen-html": "node cli.js genAMPHtml",
+    "gen-html": "node cli.js genAmpHtml",
     "find-amp-url": "node cli.js saveUrl && node cli.js saveAmpUrl",
     "dumpData": "node cli.js dumpData",
     "init": "node cli.js init",
     "lint": "eslint"
   },
   "keywords": [
-    "AMP"
+    "AMP",
+    "toolbox-optimizer"
   ],
   "author": "K.Sakurai",
   "license": "MIT"
