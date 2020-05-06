@@ -1,5 +1,4 @@
 const https = require('https');
-const cheerio = require('cheerio');
 const xml2js = require('xml2js');
 const parser = new xml2js.Parser({ attrkey: 'ATTR' });
 const config = require('../../config.js');

@@ -15,7 +15,6 @@ module.exports = function() {
         let subject = fs.readFileSync(`${templateDir}subject.tpl`, 'utf8').toString('utf8');
         let text = fs.readFileSync(`${templateDir}textMail.tpl`, 'utf8').toString('utf8');
         let htmlMail = fs.readFileSync(`${templateDir}htmlMail.tpl`, 'utf8').toString('utf8');
-        let ampHtmlMail = fs.readFileSync(`${templateDir}ampHtmlMail.tpl`, 'utf8').toString('utf8');
         
         let data = {
             tasks : result,
